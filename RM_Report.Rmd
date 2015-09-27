@@ -10,31 +10,11 @@ In this paper we will analyze mtcars data set and determine the relation between
 
 Upon analysis was found that Manual transmission better Automatic transmission by about 7mpg given the same weight and power. 
 
-## Load Data and Libraries
 ```{r, echo=FALSE}
 library(ggplot2)
 library(stats) 
 data(mtcars)
-```
 
-## Exploratory Data Analysis  
-```{r, echo=FALSE}
-summary(cars)
-```
-
-At first we plotted mpg vs am (see Annex:Figure 1) and observed that overall automatic transmission achieve less mpg than manual transmission. However there might be other factors involved.
-We further analyze mean mpg for "automatic"" vs "manual"" 
-```{r }
-means <- round(tapply(mtcars$mpg, mtcars$am, mean), 2)
-```
-
-
-We than proceed to pair plot variables  and observed that other factors influence mnps: hp, wt, disp, cyl.
-Upon further analysis "cyl" can be discarded since "disp" is more important.
-going further we will analyze models based on mpg, mpg+wt, mpg+wt+disp and mps+wt+hp.
-
-
-```{r, echo=FALSE}
 mtcars$cyl  <- factor(mtcars$cyl)
 mtcars$vs   <- factor(mtcars$vs)
 mtcars$gear <- factor(mtcars$gear)
@@ -42,54 +22,36 @@ mtcars$carb <- factor(mtcars$carb)
 mtcars$am   <- factor(mtcars$am,labels=c('Automatic','Manual'))
 ```
 
-
-```{r, echo=FALSE}
-means <- round(tapply(mtcars$mpg, mtcars$am, mean), 2)
+## Exploratory Data Analysis  
+At first we plotted mpg vs am (see Annex:Figure 1) and observed that overall automatic transmission achieve less mpg than manual transmission. However there might be other factors involved.
+We further analyze mean mpg for "automatic"" vs "manual"" 
+```{r }
+round(tapply(mtcars$mpg, mtcars$am, mean), 2)
 ```
+We than proceed to pair plot variables  and observed that other factors influence mnps: hp, wt, disp, cyl.
+Upon further analysis "cyl" can be discarded since "disp" is more important.
+going further we will analyze models based on mpg, mpg+wt, mpg+wt+disp and mps+wt+hp.
 
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-
-```{r, echo=FALSE}
+## Regression Models
+```{r}
 model_full       <- lm(mpg ~ ., mtcars)
 model_am         <- lm(mpg ~ am , mtcars)
 model_am_wt      <- lm(mpg ~ am + wt, mtcars)
 model_am_wt_disp <- lm(mpg ~ am + wt + disp, mtcars)
 model_am_wt_hp   <- lm(mpg ~ am + wt + hp, mtcars)
-
 ```
-
-
-```{r, echo=FALSE}
+coef
+```{r, results='hide'}
 summary(model_am)$coef
 summary(model_am_wt)$coef
 summary(model_am_wt_disp)$coef
 summary(model_am_wt_hp)$coef
 ```
-
-
-
+Anova Test
 ```{r, echo=FALSE}
 anova(model_am, model_am_wt, model_am_wt_disp,model_am_wt_hp)
-
-```
-
-
-```{r, echo=FALSE}
 confint(model_am_wt_hp)
-
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
-## Regression Analysis
-
-
 
 
 ## Residual Analysis and Diagnostics  

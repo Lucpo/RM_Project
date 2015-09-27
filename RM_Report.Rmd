@@ -1,0 +1,113 @@
+---
+title: "Regression Models Project"
+
+author: "Lucian Pop"
+date: "Sunday, September 27, 2015"
+output: pdf_document
+---
+
+## Executive Summary  
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Load Data and Libraries
+```{r, recho=FALSE}
+library(ggplot2)
+library(stats) 
+data(mtcars)
+```
+
+## Exploratory Data Analysis  
+```{r, recho=FALSE}
+summary(cars)
+```
+
+```{r, recho=FALSE}
+mtcars$cyl  <- factor(mtcars$cyl)
+mtcars$vs   <- factor(mtcars$vs)
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+mtcars$am   <- factor(mtcars$am,labels=c('Automatic','Manual'))
+```
+
+
+```{r, recho=FALSE}
+means <- round(tapply(mtcars$mpg, mtcars$am, mean), 2)
+```
+
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+
+```{r, echo=FALSE}
+model_full       <- lm(mpg ~ ., mtcars)
+model_am         <- lm(mpg ~ am , mtcars)
+model_am_wt      <- lm(mpg ~ am + wt, mtcars)
+model_am_wt_disp <- lm(mpg ~ am + wt + disp, mtcars)
+model_am_wt_hp   <- lm(mpg ~ am + wt + hp, mtcars)
+
+```
+
+
+```{r, echo=FALSE}
+summary(model_am)$coef
+summary(model_am_wt)$coef
+summary(model_am_wt_disp)$coef
+summary(model_am_wt_hp)$coef
+```
+
+
+
+```{r, echo=FALSE}
+anova(model_am, model_am_wt, model_am_wt_disp,model_am_wt_hp)
+
+```
+
+
+```{r, echo=FALSE}
+confint(model_am_wt_hp)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+## Regression Analysis
+
+
+
+
+## Residual Analysis and Diagnostics  
+
+```{r, echo=FALSE}
+sum((abs(dfbetas(model_am_wt_hp)))>1)
+```
+
+## Appendix: Figures  
+
+1. Plot of MPG vs. Transmission  
+```{r}
+ggplot(mtcars, aes(y=mpg, x=factor(am, labels = c("automatic", "manual")), fill=(am)))+
+  geom_violin(colour="red", size=1.5)+
+  xlab("Transmission") + ylab("MPG")
+```  
+2. Pair Graph of Motor Trend Road Test Cars Data  
+```{r}
+pairs(mtcars, panel=panel.smooth, main='Road Test Cars Data', col=mtcars$am, pch=19)
+```  
+3. Scatter Plots MPG vs. factors  
+```{r}
+qplot(mpg, wt,  data=mtcars,colour=am )
+qplot(mpg, disp,  data=mtcars,colour=am )
+qplot(mpg, hp,  data=mtcars,colour=am )
+```  
+4. Residual Plots
+```{r}
+par(mfrow = c(2, 2))
+plot(model_am_wt_hp)
+```  

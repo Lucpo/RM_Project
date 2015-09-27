@@ -8,7 +8,7 @@ output: pdf_document
 ## Executive Summary  
 In this paper we will analyze mtcars data set and determine the relation between mpg and other significant variables. This data is extracted from the 1974 Motor Trend magazine, and denotes fuel consumption and other aspects of automobile performance for 32 73–74 car models.
 
-Upon analysis was found that Manual transmission better Automatic transmission by about 7mpg given the same weight and power. 
+Upon analysis was found that Manual transmission better Automatic transmission by about 2 mpg given the same weight and power. 
 
 ```{r, echo=FALSE}
 library(ggplot2)
@@ -40,45 +40,60 @@ model_am_wt      <- lm(mpg ~ am + wt, mtcars)
 model_am_wt_disp <- lm(mpg ~ am + wt + disp, mtcars)
 model_am_wt_hp   <- lm(mpg ~ am + wt + hp, mtcars)
 ```
-coef
+We study all models coeficients and summary values.
 ```{r, results='hide'}
 summary(model_am)$coef
 summary(model_am_wt)$coef
 summary(model_am_wt_disp)$coef
 summary(model_am_wt_hp)$coef
 ```
-Anova Test
-```{r, echo=FALSE}
+Then we perform an Anova Test.
+```{r}
 anova(model_am, model_am_wt, model_am_wt_disp,model_am_wt_hp)
 confint(model_am_wt_hp)
 ```
+Ultimately we choose the model "mpg ~ am + wt + hp" which has the highest Adjusted R-squared:  0.8227 and 
+Residual standard error: 2.538 on 28 degrees of freedom
+This means that the model can explain about 82% of the variance of the MPG.
+We believe this is the best option from studied models.
 
+```{r}
+summary(model_am_wt_hp)$coef
+```
+Based on our model given the same "wt" (weight lb/1000)  and "hp" (power) a car with manual transmission will have an increase "mpg" by 2.083. 
 
 ## Residual Analysis and Diagnostics  
-
-```{r, echo=FALSE}
+To verify how much an observation has effected the estimate of a regression coefficient  we calculate dfbetas sums and found it to be "0".
+```{r}
 sum((abs(dfbetas(model_am_wt_hp)))>1)
 ```
+From the residual plot (see Annex: Fig3) we observe that "Residuals vs. Fitted"" plot shows no consistent pattern, "Normal Q-Q"" plot indicates that the residuals are normally distributed, 
+"Scale-Location"" plot confirms the constant variance assumption and "Residuals vs. Leverage" argues that no outliers are present.
+
+
+
+
+
+
+
+
+
+
+
 
 ## Appendix: Figures  
 
 1. Plot of MPG vs. Transmission  
 ```{r}
 ggplot(mtcars, aes(y=mpg, x=factor(am, labels = c("automatic", "manual")), fill=(am)))+
-  geom_violin(colour="red", size=1.5)+
+  geom_violin(colour="red", size=0.5)+
   xlab("Transmission") + ylab("MPG")
 ```  
 2. Pair Graph of Motor Trend Road Test Cars Data  
 ```{r}
 pairs(mtcars, panel=panel.smooth, main='Road Test Cars Data', col=mtcars$am, pch=19)
 ```  
-3. Scatter Plots MPG vs. factors  
-```{r}
-qplot(mpg, wt,  data=mtcars,colour=am )
-qplot(mpg, disp,  data=mtcars,colour=am )
-qplot(mpg, hp,  data=mtcars,colour=am )
-```  
-4. Residual Plots
+3. Residual Plots
 ```{r}
 par(mfrow = c(2, 2))
 plot(model_am_wt_hp)

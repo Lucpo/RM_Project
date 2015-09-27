@@ -1,30 +1,40 @@
 ---
 title: "Regression Models Project"
-
 author: "Lucian Pop"
 date: "Sunday, September 27, 2015"
 output: pdf_document
 ---
 
 ## Executive Summary  
+In this paper we will analyze mtcars data set and determine the relation between mpg and other significant variables. This data is extracted from the 1974 Motor Trend magazine, and denotes fuel consumption and other aspects of automobile performance for 32 73–74 car models.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Upon analysis was found that Manual transmission better Automatic transmission by about 7mpg given the same weight and power. 
 
 ## Load Data and Libraries
-```{r, recho=FALSE}
+```{r, echo=FALSE}
 library(ggplot2)
 library(stats) 
 data(mtcars)
 ```
 
 ## Exploratory Data Analysis  
-```{r, recho=FALSE}
+```{r, echo=FALSE}
 summary(cars)
 ```
 
-```{r, recho=FALSE}
+At first we plotted mpg vs am (see Annex:Figure 1) and observed that overall automatic transmission achieve less mpg than manual transmission. However there might be other factors involved.
+We further analyze mean mpg for "automatic"" vs "manual"" 
+```{r }
+means <- round(tapply(mtcars$mpg, mtcars$am, mean), 2)
+```
+
+
+We than proceed to pair plot variables  and observed that other factors influence mnps: hp, wt, disp, cyl.
+Upon further analysis "cyl" can be discarded since "disp" is more important.
+going further we will analyze models based on mpg, mpg+wt, mpg+wt+disp and mps+wt+hp.
+
+
+```{r, echo=FALSE}
 mtcars$cyl  <- factor(mtcars$cyl)
 mtcars$vs   <- factor(mtcars$vs)
 mtcars$gear <- factor(mtcars$gear)
@@ -33,7 +43,7 @@ mtcars$am   <- factor(mtcars$am,labels=c('Automatic','Manual'))
 ```
 
 
-```{r, recho=FALSE}
+```{r, echo=FALSE}
 means <- round(tapply(mtcars$mpg, mtcars$am, mean), 2)
 ```
 
